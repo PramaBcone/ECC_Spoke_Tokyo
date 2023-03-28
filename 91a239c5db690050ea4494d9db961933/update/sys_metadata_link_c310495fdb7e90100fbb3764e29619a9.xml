@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_metadata_link">
+    <sys_metadata_link action="INSERT_OR_UPDATE">
+        <directory>update</directory>
+        <documentkey>b265083edbce58100fbb3764e29619db</documentkey>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sn_sap_s4_hana_rfc_sap_s_4hana_rfc_list">
+    <sn_sap_s4_hana_rfc_sap_s_4hana_rfc_list action="INSERT_OR_UPDATE">
+        <application_component>Financial accounting</application_component>
+        <enabled>true</enabled>
+        <name>BAPI_AR_ACC_GETKEYDATEBALANCE</name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2020-07-20 06:43:29</sys_created_on>
+        <sys_id>b265083edbce58100fbb3764e29619db</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2020-07-20 06:43:29</sys_updated_on>
+        <ui_label>Financial accounting - BAPI_AR_ACC_GETKEYDATEBALANCE</ui_label>
+    </sn_sap_s4_hana_rfc_sap_s_4hana_rfc_list>
+</record_update>
+]]></payload>
+        <sys_class_name>sys_metadata_link</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2020-08-28 07:02:39</sys_created_on>
+        <sys_id>c310495fdb7e90100fbb3764e29619a9</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Financial accounting - BAPI_AR_ACC_GETKEYDATEBALANCE</sys_name>
+        <sys_package display_value="SAP S/4HANA - RFC Spoke" source="sn_sap_s4_hana_rfc">866b1c231bf19010d2cf7669cc4bcba5</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="SAP S/4HANA - RFC Spoke">866b1c231bf19010d2cf7669cc4bcba5</sys_scope>
+        <sys_update_name>sys_metadata_link_c310495fdb7e90100fbb3764e29619a9</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2020-08-28 07:02:39</sys_updated_on>
+        <tablename>sn_sap_s4_hana_rfc_sap_s_4hana_rfc_list</tablename>
+    </sys_metadata_link>
+</record_update>

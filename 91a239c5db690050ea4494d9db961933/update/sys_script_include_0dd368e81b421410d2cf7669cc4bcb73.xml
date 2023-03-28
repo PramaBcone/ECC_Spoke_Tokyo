@@ -1,0 +1,483 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_script_include">
+    <sys_script_include action="INSERT_OR_UPDATE">
+        <access>package_private</access>
+        <active>true</active>
+        <api_name>sn_sap_s4_hana_rfc.SapRFCUtil</api_name>
+        <caller_access/>
+        <client_callable>false</client_callable>
+        <description/>
+        <name>SapRFCUtil</name>
+        <script><![CDATA[var SapRFCUtil = Class.create();
+
+SapRFCUtil.removeMetaNameField = function(inObj) {
+	var strIn = JSON.stringify(inObj);
+	// replace "name$":"objName", with empty string, effectively removing this meta field from Json
+	strIn = strIn.replace(/"name\$":"\w+",/gm, "");
+	strIn = JSON.stringify(JSON.parse(strIn));
+	return strIn;
+};
+
+SapRFCUtil.getConnectionFromAlias = function(aliasId) {
+	if (JSUtil.nil(aliasId)) {
+		var errNilAlias = 'Connection Alias cannot be blank.';
+		gs.error(errNilAlias);
+		throw errNilAlias;
+	}
+
+	var prov = new sn_cc.ConnectionInfoProvider();
+	var info = prov.getConnectionInfo(aliasId);
+	if (JSUtil.notNil(info)) {
+		return info;
+	}
+
+	var errNilConn = 'No Connection record found for Alias ID - ' + aliasId+'.';
+	gs.error(errNilConn);
+	throw errNilConn;
+};
+
+SapRFCUtil.getCredentialIdFromConnection = function(connId) {
+	//Instantiate the GlideRecord with 'sys_connection' table
+	var grConn = new GlideRecord("sys_connection");
+	if (grConn.get(connId)) {
+		var cred = grConn.getValue("credential");
+		if (JSUtil.nil(cred)) {
+			var errNilCred = 'No Credentials were found associated to Connection.';
+			gs.error(errNilCred);
+			throw errNilCred;
+		}
+		return cred;
+	}
+
+	var errNilConn = 'Error while retrieving Connection Record for Connection ID - ' + connId+'.'; 
+	gs.error(errNilConn);
+	throw errNilConn;
+};
+
+SapRFCUtil.flattenSchema = function(input) {
+	var procData = new Array();
+	try {
+		if (JSUtil.notNil(input.data)) {
+			for (var i = 0; i < input.data.length; i++) {
+				var obj = input.data[i];
+				if (obj.type == 'object') {
+					recurse(procData, obj.label, obj.name, obj.children);
+				} else {
+					procData.push(obj);
+				}
+			}
+		}
+	} catch(e) {
+		var err = 'An error occurred while creating RFC input schema. ' + e.message;
+		gs.error(err);
+		throw err;
+	}
+
+	var flatSchema = {
+		data: procData
+	};
+
+	return flatSchema;
+
+	function recurse(procData, labelPrefix, namePrefix, children) {
+		for (var j = 0; j < children.length; j++) {
+			var childObj = children[j];
+			if (children[j].type == 'object') {
+				recurse(procData, (labelPrefix + ' > ' + childObj.label), (namePrefix + '.' + childObj.name), childObj.children);
+			} else {
+				childObj.label = labelPrefix + ' > ' + childObj.label;
+				childObj.name = namePrefix + '.' + childObj.name;
+				procData.push(childObj);
+			}
+		}
+	}
+};
+
+SapRFCUtil.prepareOutSchema = function(input) {
+	var children = new Array();
+	try {
+		if (JSUtil.notNil(input.data)) {
+			for (var i = 0; i < input.data.length; i++) {
+				var obj = input.data[i];
+				var type = obj['type'];
+				switch (type) {
+					case 'array.object':
+						obj['attributes'] = {
+							child_type: obj['child_type']
+						};
+						delete obj['child_type'];
+						replaceNames(obj.children);
+
+						//No 'break' needed as recurse and push is required for array.object also
+					case 'object':
+						recurse(obj.children);
+						children.push(obj);
+						break;
+
+					default:
+						if (obj['name'].includes('/'))
+							obj['name'] = obj['name'].replace(/\//g, 'X_3r_');
+						children.push(obj);
+				}
+			}
+		}
+	} catch (e) {
+		var err = 'An error occurred while creating RFC output schema. ' + e.message;
+		gs.error(err);
+		throw err;
+	}
+
+	var schema = {
+		data: {
+			type: "object",
+			children: children
+		}
+	};
+
+	return schema;
+
+	function recurse(objChildren) {
+		for (var j = 0; j < objChildren.length; j++) {
+			var childObj = objChildren[j];
+			if (childObj['type'] == 'number')
+				childObj['type'] = "string";
+			if (childObj['name'].includes('/'))
+				childObj['name'] = childObj['name'].replace(/\//g, 'X_3r_');
+			switch (childObj.type) {
+				case 'array.object':
+					childObj['attributes'] = {
+						child_type: childObj['child_type']
+					};
+					delete childObj['child_type'];
+					replaceNames(childObj.children);
+
+					//No 'break' needed as recurse is required for array.object also
+				case 'object':
+					recurse(childObj.children);
+					break;
+			}
+		}
+	}
+
+		function replaceNames(arr) {
+		for(var key=0; key < arr.length; key++){
+			gs.info("Allchildfields :"+arr[key].name);
+			if (arr[key].name.includes('/')) {
+				//gs.info("childname01-Beforereplcae :"+arr[key].name);
+				arr[key].name = arr[key].name.replace(/\//g, 'X_3r_');
+				//gs.info("childname01-Afterreplcae :"+arr[key].name);
+			}
+		}
+	}
+};
+
+SapRFCUtil.replaceOutputFieldNames = function(arr){
+    var newFields = [];
+    arr.forEach(function replaceNames(obj){
+        var NewObj ={};
+        var keys = Object.keys(obj);
+        keys.forEach(function replace(name){
+            if(name.includes('/')){
+                Newkey = name.replace(/\//g, 'X_3r_');
+                NewObj[Newkey] = obj[name];
+            }else{
+                NewObj[name] = obj[name];
+            }
+        });
+        newFields.push(NewObj);
+        });
+        return newFields;
+};
+
+SapRFCUtil.checkMandatoryFields = function(mandatoryFieldsList) {
+	var emptyMandatoryFieldsList = [];
+	Object.keys(mandatoryFieldsList).forEach(function(key) {
+		if (JSUtil.nil(mandatoryFieldsList[key])) {
+			emptyMandatoryFieldsList.push(key);
+		}
+	});
+	emptyMandatoryFieldsList = emptyMandatoryFieldsList.join(", ");
+	return emptyMandatoryFieldsList;
+};
+
+SapRFCUtil.unflattenPayload = function(input) {
+	var reqJson = new Object();
+	if (JSUtil.notNil(input)) {
+		try {
+			var fieldsArr = input.split(/\^/);
+			for (var i = 0; i < fieldsArr.length; i++) {
+				var keyValPair = fieldsArr[i].split(/=(.*)/);
+				if (JSUtil.notNil(keyValPair[0])) {
+					if (keyValPair[0].contains('.')) {
+						var keys = keyValPair[0].split(/\./);
+						var hier = null, parent = null;
+						for (var j = 0; j < keys.length - 1; j++) {
+							if (j == 0 && !reqJson.hasOwnProperty(keys[j])) {
+								reqJson[keys[j]] = new Object();
+								hier = reqJson[keys[j]];
+								parent = hier;
+							} else if (j == 0) {
+								hier = reqJson[keys[j]];
+								parent = hier;
+							} else if (j != 0 && !parent.hasOwnProperty(keys[j])) {
+								parent[keys[j]] = new Object();
+								parent = parent[keys[j]];
+							} else if (j != 0) {
+								parent = parent[keys[j]];
+							}
+						}
+						parent[keys[keys.length - 1]] = keyValPair[1];
+					} else {
+						reqJson[keyValPair[0]] = keyValPair[1];
+					}
+				}
+			}
+			return reqJson;
+		} catch (e) {
+			var err = 'An error occurred while creating payload JSON from input. ' + e.message;
+			gs.error(err);
+			throw err;
+		}
+	}
+	return reqJson;
+};
+
+SapRFCUtil.unflattenPayloadWithTabularFields = function(input) {
+    var reqJson = new Object();
+    if (JSUtil.notNil(input)) {
+        try {
+            var fieldsArr = input.split(/\^/);
+            for (var i = 0; i < fieldsArr.length; i++) {
+                var keyValPair = fieldsArr[i].split(/^(.*?)=/);
+                try {
+                    keyValPair[2] = JSON.parse(keyValPair[2],function(key, value) { return value == null ? "" : value; });
+                } catch (e) {}
+                if (JSUtil.notNil(keyValPair[1])) {
+                    if (keyValPair[1].contains('.')) {
+                        var keys = keyValPair[1].split(/\./);
+                        var hier = null,
+                            parent = null;
+                        for (var j = 0; j < keys.length - 1; j++) {
+                            if (j == 0 && !reqJson.hasOwnProperty(keys[j])) {
+                                reqJson[keys[j]] = new Object();
+                                hier = reqJson[keys[j]];
+                                parent = hier;
+                            } else if (j == 0) {
+                                hier = reqJson[keys[j]];
+                                parent = hier;
+                            } else if (j != 0 && !parent.hasOwnProperty(keys[j])) {
+                                parent[keys[j]] = new Object();
+                                parent = parent[keys[j]];
+                            } else if (j != 0) {
+                                parent = parent[keys[j]];
+                            }
+                        }
+                        parent[keys[keys.length - 1]] = keyValPair[2];
+                    } else {
+                        reqJson[keyValPair[1]] = keyValPair[2];
+                    }
+                }
+            }
+            return reqJson;
+        } catch (e) {
+            var err = 'An error occurred while creating payload JSON from input. ' + e.message;
+            gs.error(err);
+            throw err;
+        }
+    }
+    return reqJson;
+};
+
+SapRFCUtil.getGlideRecord = function(tableName, queryParams, groupByParams) {
+	var glideAgg = new GlideAggregate(tableName);
+
+	if (JSUtil.notNil(queryParams)) {
+		Object.keys(queryParams).forEach(function(key) {
+			glideAgg.addQuery(key.toString(), queryParams[key].toString());
+		});
+	}
+
+	if (JSUtil.notNil(groupByParams)) {
+		groupByParams.forEach(function(param) {
+			glideAgg.groupBy(param.toString());
+		});
+	}
+
+	glideAgg.query();
+
+	return glideAgg;
+};
+
+SapRFCUtil.isResponseNotEmpty = function(obj) {
+	if (JSUtil.notNil(obj)) {
+		return checkNotEmpty(obj);
+	}
+
+	return false;
+
+	function checkNotEmpty(obj1) {
+		var isNotEmpty = false;
+		switch(JSUtil.typeOf(obj1)) {
+			case 'object':
+				var keys = Object.keys(obj1);
+				for (var idx = 0; idx < keys.length; idx++) {
+					if (JSUtil.notNil(obj1[keys[idx]]) && checkNotEmpty(obj1[keys[idx]])) {
+						isNotEmpty = true;
+						return isNotEmpty;
+					}
+				}
+				break;
+
+			case 'array':
+				for (var i = 0; i < obj1.length; i++) {
+					if (JSUtil.notNil(obj1[i]) && checkNotEmpty(obj1[i])) {
+						isNotEmpty = true;
+						return isNotEmpty;
+					}
+				}
+				break;
+
+			default:
+				isNotEmpty = true;
+				return isNotEmpty;
+		}
+
+		return isNotEmpty;
+	}
+};
+
+SapRFCUtil.getReturnErrors = function(obj) {
+	var status = 'success', errors = '';
+	if (JSUtil.notNil(obj) && obj.hasOwnProperty('RETURN')) {
+		switch(JSUtil.typeOf(obj.RETURN)) {
+			case 'array':
+				for (var i = 0; i < obj.RETURN.length; i++) {
+					if (getErrStatusRetObj(obj.RETURN[i]) == 'error') {
+						status = 'error';
+					}
+				}
+				break;
+
+			case 'object':
+				status = getErrStatusRetObj(obj.RETURN);
+				break;
+		}
+	}
+
+	var errStatusObj = {
+		status: status,
+		err: errors
+	};
+
+	return errStatusObj;
+
+	function getErrStatusRetObj(retObj) {
+		if (retObj.TYPE == 'E' || retObj.TYPE == 'A') {
+			errors += retObj.MESSAGE + ".\n";
+			return 'error';
+		}
+
+		return 'success';
+	}
+};
+
+SapRFCUtil.getUnknownErr = function(e) {
+	var msg = 'Encountered an error. Check log for more details.';
+	gs.error(e);
+
+	var errStatusObj = {
+		status: 'error',
+		err: msg 
+	};
+
+	return errStatusObj;
+};
+SapRFCUtil.checkextrafields= function(field, segment) {
+	var extrafieldlist = new Array();
+	switch(segment){
+		case 'BAPI_SALESORDER_CREATEFROMDAT2-ORDER_HEADER_INX':
+			extrafieldlist =  ["REFOBJTYPE","REFOBJKEY","REFDOCTYPE","CURR_ISO","CREATED_BY","H_CURR_ISO","REF_DOC_L_LONG"];
+			break;
+
+		case 'BAPI_SALESORDER_CREATEFROMDAT2-ORDER_ITEMS_INX':
+			extrafieldlist = ["S_UNIT_ISO","UNOF_WTISO","VOLUNITISO","CREATED_BY","CURRENCY","CURR_ISO","FUNC_AREA_LONG","COMPREAS"];
+			break;
+		case 'BAPI_SALESORDER_CHANGE-ORDER_HEADER_INX':
+			extrafieldlist = ['CURR_ISO','H_CURR_ISO','REF_DOC_L_LONG'];
+			break;
+		case 'BAPI_SALESORDER_CHANGE-ORDER_ITEM_INX':
+			extrafieldlist = ["S_UNIT_ISO","UNOF_WTISO","VOLUNITISO","CREATED_BY","CURRENCY","CURR_ISO","FUNC_AREA_LONG","COMPREAS"];
+	}
+	for(var i=0; i < extrafieldlist.length; i++)
+	{
+		if(field == extrafieldlist[i]){
+			return true;
+		}
+	}
+	return false;
+};
+SapRFCUtil.masksensitiveinfo = function(str) {
+	if (gs.nil(str))
+		return "";
+	var trailingCharsIntactCount = 4;
+	str = str.toString();
+	var newstr = str;
+
+	if (str.length > 4) {
+		newstr = str.substring(0, str.length - trailingCharsIntactCount);
+		newstr = newstr.replace(/./g, 'x') + str.slice(-trailingCharsIntactCount);
+
+	}
+	return newstr;
+};
+
+SapRFCUtil.EscapeHTMLInjection = function(input){
+    if(input){
+        var type = typeof input;
+        if(type == 'string'){
+           return SapRFCUtil.getHTMLEncodedMessage(input);
+        }
+        else if(type == 'object' && input.length == undefined){
+            for (var item in input){
+                if(input[item]!="" && input[item]!= undefined){
+                    input[item] = SapRFCUtil.EscapeHTMLInjection(input[item]);
+                }
+            }
+            return input;
+        }
+        else if(type == 'object' && input.length != undefined){
+            input.forEach(function (key){
+                key = SapRFCUtil.EscapeHTMLInjection(key);
+            });
+            return input;
+        }else 
+        return input;
+    }
+};
+SapRFCUtil.getHTMLEncodedMessage = function(message) {
+    if (!message)
+        return message;
+    return message.replace(/([&"<>])/g, function(str, item) {
+      var escapedCharactersMapping = {
+        '&': '&amp;',
+        '"': '&quot;',
+        '<': '&lt;',
+        '>': '&gt;'
+      };
+        return escapedCharactersMapping[item];
+    });
+  };
+]]></script>
+        <sys_class_name>sys_script_include</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2020-07-13 09:09:42</sys_created_on>
+        <sys_id>0dd368e81b421410d2cf7669cc4bcb73</sys_id>
+        <sys_mod_count>38</sys_mod_count>
+        <sys_name>SapRFCUtil</sys_name>
+        <sys_package display_value="SAP S4 HANA RFC Spoke" source="sn_sap_s4_hana_rfc">866b1c231bf19010d2cf7669cc4bcba5</sys_package>
+        <sys_policy>read</sys_policy>
+        <sys_scope display_value="SAP S4 HANA RFC Spoke">866b1c231bf19010d2cf7669cc4bcba5</sys_scope>
+        <sys_update_name>sys_script_include_0dd368e81b421410d2cf7669cc4bcb73</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2022-06-06 10:34:11</sys_updated_on>
+    </sys_script_include>
+</record_update>
