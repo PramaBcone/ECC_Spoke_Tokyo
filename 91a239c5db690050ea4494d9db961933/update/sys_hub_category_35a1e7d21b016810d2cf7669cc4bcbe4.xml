@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_hub_category">
+    <sys_hub_category action="INSERT_OR_UPDATE">
+        <name>Lookups</name>
+        <order>100</order>
+        <sys_class_name>sys_hub_category</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2020-12-15 12:35:54</sys_created_on>
+        <sys_id>35a1e7d21b016810d2cf7669cc4bcbe4</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Lookups</sys_name>
+        <sys_package display_value="SAP S/4HANA - RFC Spoke" source="sn_sap_s4_hana_rfc">866b1c231bf19010d2cf7669cc4bcba5</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="SAP S/4HANA - RFC Spoke">866b1c231bf19010d2cf7669cc4bcba5</sys_scope>
+        <sys_update_name>sys_hub_category_35a1e7d21b016810d2cf7669cc4bcbe4</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2020-12-15 12:35:54</sys_updated_on>
+    </sys_hub_category>
+    <sys_translated_text action="delete_multiple" query="documentkey=35a1e7d21b016810d2cf7669cc4bcbe4"/>
+</record_update>

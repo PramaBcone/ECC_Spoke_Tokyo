@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_user_role">
+    <sys_user_role action="INSERT_OR_UPDATE">
+        <assignable_by/>
+        <can_delegate>true</can_delegate>
+        <description>SAP S/4HANA  RFC admin role</description>
+        <elevated_privilege>false</elevated_privilege>
+        <grantable>true</grantable>
+        <includes_roles/>
+        <name>sn_sap_s4_hana_rfc.SAP_S4_HANA_RFC_Spoke_Admin</name>
+        <requires_subscription>-1</requires_subscription>
+        <scoped_admin>false</scoped_admin>
+        <suffix>SAP_S4_HANA_RFC_Spoke_Admin</suffix>
+        <sys_class_name>sys_user_role</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2020-12-09 12:21:47</sys_created_on>
+        <sys_id>cdb468641bc92410d2cf7669cc4bcb44</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>sn_sap_s4_hana_rfc.SAP_S4_HANA_RFC_Spoke_Admin</sys_name>
+        <sys_package display_value="SAP S/4HANA - RFC Spoke" source="sn_sap_s4_hana_rfc">866b1c231bf19010d2cf7669cc4bcba5</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="SAP S/4HANA - RFC Spoke">866b1c231bf19010d2cf7669cc4bcba5</sys_scope>
+        <sys_update_name>sys_user_role_cdb468641bc92410d2cf7669cc4bcb44</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2020-12-09 12:21:47</sys_updated_on>
+    </sys_user_role>
+</record_update>

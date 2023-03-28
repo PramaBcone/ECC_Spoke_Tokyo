@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_security_acl_role">
+    <sys_security_acl_role action="INSERT_OR_UPDATE">
+        <sys_class_name>sys_security_acl_role</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2020-12-10 03:10:46</sys_created_on>
+        <sys_id>7460bfe81b816410d2cf7669cc4bcb3f</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>sn_sap_s4_hana_rfc_sap_s_4hana_users_record.sn_sap_s4_hana_rfc.SAP_S4_HANA_RFC_Spoke_Admin</sys_name>
+        <sys_package display_value="SAP S/4HANA - RFC Spoke" source="sn_sap_s4_hana_rfc">866b1c231bf19010d2cf7669cc4bcba5</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="SAP S/4HANA - RFC Spoke">866b1c231bf19010d2cf7669cc4bcba5</sys_scope>
+        <sys_security_acl display_value="sn_sap_s4_hana_rfc_sap_s_4hana_users_record">e460bfe81b816410d2cf7669cc4bcb3a</sys_security_acl>
+        <sys_update_name>sys_security_acl_role_7460bfe81b816410d2cf7669cc4bcb3f</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2020-12-11 05:30:55</sys_updated_on>
+        <sys_user_role display_value="sn_sap_s4_hana_rfc.SAP_S4_HANA_RFC_Spoke_Admin" name="sn_sap_s4_hana_rfc.SAP_S4_HANA_RFC_Spoke_Admin">cdb468641bc92410d2cf7669cc4bcb44</sys_user_role>
+        <transaction_id/>
+    </sys_security_acl_role>
+</record_update>

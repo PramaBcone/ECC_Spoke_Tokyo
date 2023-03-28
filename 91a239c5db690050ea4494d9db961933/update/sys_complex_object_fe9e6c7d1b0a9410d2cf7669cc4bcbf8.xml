@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_complex_object">
+    <sys_complex_object action="INSERT_OR_UPDATE">
+        <label/>
+        <name>FD3e9e6c7d620a9410ab15abdfc14a24f8</name>
+        <namespace>FlowDesigner</namespace>
+        <scope_name>866b1c231bf19010d2cf7669cc4bcba5</scope_name>
+        <serialized_content>{"FlowDesigner:FD3e9e6c7d620a9410ab15abdfc14a24f8":{"SUBNUMBER":"String","SUBNUMBER.$field_facets":{"SimpleMapFacet":"{\"uiTypeLabel\":\"String\",\"read_only\":\"false\",\"hint\":\"\",\"uiType\":\"string\",\"default_value\":\"\",\"label\":\"Sub-number\",\"mandatory\":\"false\",\"order\":\"3\",\"max_length\":\"0\"}"},"COMPANYCODE":"String","COMPANYCODE.$field_facets":{"SimpleMapFacet":"{\"uiTypeLabel\":\"String\",\"read_only\":\"false\",\"hint\":\"\",\"uiType\":\"string\",\"default_value\":\"\",\"label\":\"Company Code\",\"mandatory\":\"false\",\"order\":\"1\",\"max_length\":\"0\"}"},"ASSET":"String","ASSET.$field_facets":{"SimpleMapFacet":"{\"uiTypeLabel\":\"String\",\"read_only\":\"false\",\"hint\":\"\",\"uiType\":\"string\",\"default_value\":\"\",\"label\":\"Asset\",\"mandatory\":\"false\",\"order\":\"2\",\"max_length\":\"0\"}"}},"FlowDesigner:FD3e9e6c7d620a9410ab15abdfc14a24f8.$type_facets":{"SimpleMapFacet":"{\"sourceId\":\"\",\"default_value\":\"\",\"label\":\"Reference Asset For Creating\",\"mandatory\":\"false\",\"uiUniqueId\":\"6473aa9e-0d42-4ac1-b633-c5e3387ac132\",\"uiTypeLabel\":\"Object\",\"co_type_name\":\"FD3e9e6c7d620a9410ab15abdfc14a24f8\",\"element_mapping_provider\":\"com.glide.flow_design.action.data.FlowDesignVariableMapper\",\"read_only\":\"false\",\"sourceUiUniqueId\":\"\",\"sourceType\":\"\",\"hint\":\"\",\"uiType\":\"object\",\"order\":\"6\",\"max_length\":\"65000\"}"}}</serialized_content>
+        <sys_class_name>sys_complex_object</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2020-07-17 07:08:10</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>fe9e6c7d1b0a9410d2cf7669cc4bcbf8</sys_id>
+        <sys_mod_count>2</sys_mod_count>
+        <sys_name>FD3e9e6c7d620a9410ab15abdfc14a24f8</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="SAP S4 HANA RFC Spoke" source="sn_sap_s4_hana_rfc">866b1c231bf19010d2cf7669cc4bcba5</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="SAP S4 HANA RFC Spoke">866b1c231bf19010d2cf7669cc4bcba5</sys_scope>
+        <sys_update_name>sys_complex_object_fe9e6c7d1b0a9410d2cf7669cc4bcbf8</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2020-12-09 14:22:00</sys_updated_on>
+        <type>complex_object_schema</type>
+    </sys_complex_object>
+</record_update>
